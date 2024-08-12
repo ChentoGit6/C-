@@ -1,0 +1,132 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+/*(30 pts) Se desea procesar los movimientos del Túnel SubFluvial a lo largo de un día. Por el túnel
+pasan 5 tipos de vehículos: 1-Motos, 2-Autos, 3-Furgones, 4-Camiones, 5-Colectivos. Cada uno de estos
+tipos tienen un costo diferente. a) Escriba un programa que permita ingresar primero el costo para cada
+una de las 5 categorías; b) y luego pares de datos: tipo de vehículo (1 a 5) y destino (“P” a Paraná y “S”
+a Santa Fe). La carga finaliza cuando se ingresa tipo de vehículo 0. Luego el programa debe informar: c)
+La cantidad de vehículos registrados por cada tipo y destino. d) Los dos tipos de vehículos que más
+pasaron hacia un destino ingresado por el usuario. e) La recaudación total de cada destino. Nota: Utilice
+funciones para los items c), d) y e)
+*/
+
+//if (v[i].destino == 'P'){
+//	registro[i].contador_p++;
+//	registro[i].tipo = v[i].tipo;
+//}
+struct vehiculo{
+	int tipo;
+	char destino;
+};
+
+struct registro{
+	int tipo;
+	int contador_p;
+	int contador_s;
+};
+
+vector<registro> analizar(vector<vehiculo>v){
+	registro cero;
+	cero.tipo = 0;
+	cero.contador_p = 0;
+	cero.contador_s = 0;
+	vector<registro>f(6, cero);
+	for(size_t i=0;i<v.size();i++) { 
+		f[v[i].tipo].tipo +=1;
+		if(v[i].destino == 'P'){
+			f[v[i].tipo].contador_p++;
+		}else if (v[i].destino == 'S') { 
+			f[v[i].tipo].contador_s++;
+		}
+	}
+	return f;
+}
+	
+pair<int,int>dos_tipos(vector<registro>f, int destino){
+	int mayor1=0, mayor2 = 0, indice_mayor_1=0, indice_mayor_2=0;
+	if (destino == 'S'){
+		for(size_t i=0;i<f.size();i++) { 
+			if(f[i].contador_s > mayor1){
+				mayor2 = mayor1; 
+				indice_mayor_2 = indice_mayor_1;
+				mayor1 = f[i].contador_s;
+				indice_mayor_1 = f[i].tipo;
+			}else{
+				if (f[i].contador_s > mayor2){
+					mayor2 = f[i].contador_s;
+				    indice_mayor_2 = f[i].tipo;
+				}
+			}
+		}
+	}else{
+		if (destino == 'P'){
+			for(size_t i=0;i<f.size();i++) { 
+				if(f[i].contador_p > mayor1){
+					mayor2 = mayor1; 
+					indice_mayor_2 = indice_mayor_1;
+					mayor1 = f[i].contador_p;
+					indice_mayor_1 = f[i].tipo;
+				}else{
+					if (f[i].contador_p > mayor2){
+						mayor2 = f[i].contador_p;
+						indice_mayor_2 = f[i].tipo;
+					}
+				}
+			}
+		}
+	}
+	pair<int,int>p;
+	p.first = indice_mayor_1;
+	p.second = indice_mayor_2;
+	return p;
+}
+	
+void mostrar_recaudacion_total (vector<registro>f, int motos, int autos, int furgones, int camiones, int colectivos ){
+	int sumaP = 0, sumaS = 0, recaudacionS = 0, recaudacionP = 0;
+	recaudacionP = (f[1].contador_p * motos)+(f[2].contador_p * autos)+(f[3].contador_p * furgones)+(f[4].contador_p * camiones)+(f[5].contador_p * colectivos);
+	recaudacionS = (f[1].contador_s * motos)+(f[2].contador_s * autos)+(f[3].contador_s * furgones)+(f[4].contador_s * camiones)+(f[5].contador_s * colectivos);
+	pair<int,int>p;
+	cout << "La recaudacion total de Santa Fe es: "<<recaudacionS<<"$";
+	cout << "La recaudacion total de Paraná es: "<<recaudacionP<<"$";
+}
+	
+	int main() {
+		float motos, autos, furgones, camiones, colectivos;
+		cout<<"Ingresa el costo de los vehiculos:"<<endl;
+		cout << "1: ";cin>> motos;
+		cout << "2: ";cin>> autos;
+		cout << "3: ";cin>> furgones;
+		cout << "4: ";cin>> camiones;
+		cout << "5: ";cin>> colectivos;
+		vector<vehiculo>v;
+		vehiculo p;
+		int tipo;
+		char destino;
+		cout<<"Indique el tipo de vehiculo: ";cin >> tipo;
+		while(tipo != 0){
+			cout<<"Indique el destino del vehiculo (S para Santa Fé o P para Paraná)";cin >> destino;
+			p.tipo = tipo;
+			p.destino = destino;
+			v.push_back(p);
+			cout<<"Indique el tipo de vehiculo: ";cin >> tipo;
+		}
+		
+		vector<registro>franco = analizar(v);
+		
+		for(size_t i=1;i<franco.size();i++) { 
+			cout << "La cantidad de vehiculos de tipo: "<<i<< " son: "<< franco[i].tipo<<endl;
+			cout << "Donde: "<< franco[i].contador_p << " fueron a Parana y " << franco[i].contador_p <<" a Santa Fe"<<endl; 
+		}
+		
+		mostrar_recaudacion_total (franco, motos, autos, furgones, camiones, colectivos);
+		
+		cout << "Ingrese un destino para saber cuales son los dos tipos de vehículos que más pasaron"<<endl;
+		int destino;
+		cin>>destino;
+		pair<int,int>p = dos_tipos(f,destino);
+		cout << "El primero fue el vehiculo de tipo "<<p.first<<" y el segundo fue el de tipo: "<<p.second<<endl;
+		
+	return 0;
+	}
+	
